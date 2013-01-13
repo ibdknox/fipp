@@ -1,12 +1,28 @@
 (ns bbloom.fipp.edn
   "Provides a pretty document serializer and pprint fn for Clojure/EDN forms.
   See bbloom.fipp.clojure for pretty printing Clojure code."
-  (:require [bbloom.fipp.printer :as printer :refer (defprinter)]))
+  (:require [bbloom.fipp.printer :as printer :refer (defprinter)]
+            [bbloom.fipp.style :as style]))
 
 (defmulti pretty class)
 
 (defmethod pretty :default [x]
   [:text (pr-str x)])
+
+(defmethod pretty java.lang.Character [c]
+  [::style/yellow (pr-str c)])
+
+(defmethod pretty java.lang.Number [c]
+  [::style/cyan (pr-str c)])
+
+(defmethod pretty java.lang.String [c]
+  [::style/magenta (pr-str c)])
+
+(defmethod pretty clojure.lang.Keyword [k]
+  [::style/red (pr-str k)])
+
+(defmethod pretty clojure.lang.Symbol [c]
+  [::style/blue (pr-str c)])
 
 (defmethod pretty clojure.lang.IPersistentVector [v]
   [:group "[" [:align (interpose :line (map pretty v))] "]"])
@@ -62,12 +78,12 @@
 
   (->
     ;(list 1 2 3 4 [:a :b :c :d] 5 6 7 8 9)
-    ;{:foo 1 :bar \c :baz "str"}
+    {:foo 1 :bar \c :baz "str"}
     ;{:small-value [1 2 3]
     ; :larger-value {:some-key "foo"
     ;                :some-other-key "bar"}}
     ;(Person. "Brandon" "Bloom")
-    (atom (range 20))
+    ;(atom (range 20))
     ;fut
     (pprint {:width 10}))
 
